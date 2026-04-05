@@ -31,21 +31,25 @@ import argparse
 import numpy as np
 import torch
 import torch.nn as nn
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D  # noqa: F401  (needed for 3d projection)
-
 # ---------------------------------------------------------------------------
-# Import the FD solver & helpers from temp1.py (same directory)
+# Shared modules
 # ---------------------------------------------------------------------------
 _cwd = os.getcwd()
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from temp1 import (
+from solver import (
     solve_poisson_2d,
     get_boundary_indices,
     generate_random_bc,
     plot_3d_solution,
 )
-os.chdir(_cwd)  # restore in case temp1 changed it
+from networks import MLP, DeepONet2D
+from eval_utils import (
+    compute_errors,
+    plot_comparison,
+    plot_cross_sections,
+    plot_training_history,
+)
+os.chdir(_cwd)  # restore in case solver changed it
 
 
 # ============================================================================
@@ -122,61 +126,6 @@ def generate_dataset(n_samples, N=31, bc_type="four_sides",
     }
     print("Dataset generation complete.")
     return x, y, f_all, u_all, bc_all
-
-
-# ============================================================================
-#  Neural network building blocks
-# ============================================================================
-
-class MLP(nn.Module):
-    """Simple feedforward network."""
-
-    def __init__(self, in_dim, out_dim, hidden=(256, 256), activation=nn.Tanh):
-        super().__init__()
-        layers = []
-        prev = in_dim
-        for h in hidden:
-            layers.append(nn.Linear(prev, h))
-            layers.append(activation())
-            prev = h
-        layers.append(nn.Linear(prev, out_dim))
-        self.net = nn.Sequential(*layers)
-
-    def forward(self, x):
-        return self.net(x)
-
-
-class DeepONet2D(nn.Module):
-    """
-    DeepONet for 2-D operator learning.
-
-    branch_in_dim = N*N + 4*N   (flattened source + 4 BC arrays)
-    trunk input   = (x, y)       (2-D coordinates)
-    p             = latent dim   (inner-product size)
-    """
-
-    def __init__(self, branch_in_dim, p=128,
-                 branch_hidden=(512, 512), trunk_hidden=(256, 256)):
-        super().__init__()
-        self.branch = MLP(branch_in_dim, p, hidden=branch_hidden, activation=nn.Tanh)
-        self.trunk  = MLP(2, p, hidden=trunk_hidden, activation=nn.Tanh)
-        self.bias   = nn.Parameter(torch.zeros(1))
-
-    def forward(self, branch_input, xy_grid):
-        """
-        Parameters
-        ----------
-        branch_input : (B, branch_in_dim)
-        xy_grid      : (n_pts, 2)
-
-        Returns
-        -------
-        u_pred : (B, n_pts)
-        """
-        b = self.branch(branch_input)                                  # (B, p)
-        t = self.trunk(xy_grid)                                        # (n_pts, p)
-        out = torch.sum(b.unsqueeze(1) * t.unsqueeze(0), dim=-1)      # (B, n_pts)
-        return out + self.bias
 
 
 # ============================================================================
@@ -421,98 +370,6 @@ class PdeTrainer2D:
             out_parts.append(pred.cpu().numpy())
 
         return np.vstack(out_parts).reshape(M, self.Ny, self.Nx)
-
-
-# ============================================================================
-#  Evaluation helpers
-# ============================================================================
-
-def compute_errors(u_pred, u_true):
-    """Per-sample MSE and relative L2 error."""
-    axes = tuple(range(1, u_true.ndim))  # sum over spatial dims
-    mse = np.mean((u_pred - u_true) ** 2, axis=axes)
-    rel_l2 = np.sqrt(np.sum((u_pred - u_true) ** 2, axis=axes) /
-                     (np.sum(u_true ** 2, axis=axes) + 1e-12))
-    return mse, rel_l2
-
-
-def plot_comparison(x, y, u_true, u_pred, sample_idx=0,
-                    title_prefix="", save_dir=None):
-    """Side-by-side true vs predicted with error field."""
-    X, Y = np.meshgrid(x, y)
-    ut = u_true[sample_idx]
-    up = u_pred[sample_idx]
-    err = np.abs(ut - up)
-
-    fig, axes = plt.subplots(1, 3, figsize=(16, 4.5))
-
-    # true
-    c0 = axes[0].contourf(X, Y, ut, levels=50, cmap="viridis")
-    axes[0].set_title(f"{title_prefix}True u(x,y)")
-    axes[0].set_xlabel("x"); axes[0].set_ylabel("y")
-    axes[0].set_aspect("equal"); fig.colorbar(c0, ax=axes[0])
-
-    # predicted
-    c1 = axes[1].contourf(X, Y, up, levels=50, cmap="viridis")
-    axes[1].set_title(f"{title_prefix}Predicted u(x,y)")
-    axes[1].set_xlabel("x"); axes[1].set_ylabel("y")
-    axes[1].set_aspect("equal"); fig.colorbar(c1, ax=axes[1])
-
-    # error
-    c2 = axes[2].contourf(X, Y, err, levels=50, cmap="hot")
-    axes[2].set_title(f"{title_prefix}|Error|  (max={err.max():.4f})")
-    axes[2].set_xlabel("x"); axes[2].set_ylabel("y")
-    axes[2].set_aspect("equal"); fig.colorbar(c2, ax=axes[2])
-
-    plt.tight_layout()
-    if save_dir:
-        path = os.path.join(save_dir, f"comparison_sample{sample_idx}.png")
-        plt.savefig(path, dpi=150, bbox_inches="tight")
-        print(f"  Saved → {path}")
-    plt.show()
-
-
-def plot_cross_sections(x, y, u_true, u_pred, sample_idx=0,
-                        title_prefix="", save_dir=None):
-    """Cross-sections at y ≈ 0.5 and x ≈ 0.5."""
-    mid_y = len(y) // 2
-    mid_x = len(x) // 2
-    ut = u_true[sample_idx]
-    up = u_pred[sample_idx]
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
-
-    ax1.plot(x, ut[mid_y, :], "b-", lw=2, label="True")
-    ax1.plot(x, up[mid_y, :], "r--", lw=2, label="Predicted")
-    ax1.set_title(f"{title_prefix}Cross-section at y={y[mid_y]:.2f}")
-    ax1.set_xlabel("x"); ax1.set_ylabel("u"); ax1.legend(); ax1.grid(True)
-
-    ax2.plot(y, ut[:, mid_x], "b-", lw=2, label="True")
-    ax2.plot(y, up[:, mid_x], "r--", lw=2, label="Predicted")
-    ax2.set_title(f"{title_prefix}Cross-section at x={x[mid_x]:.2f}")
-    ax2.set_xlabel("y"); ax2.set_ylabel("u"); ax2.legend(); ax2.grid(True)
-
-    plt.tight_layout()
-    if save_dir:
-        path = os.path.join(save_dir, f"cross_section_sample{sample_idx}.png")
-        plt.savefig(path, dpi=150, bbox_inches="tight")
-        print(f"  Saved → {path}")
-    plt.show()
-
-
-def plot_training_history(history, save_dir=None):
-    """Log-scale training curves."""
-    fig, ax = plt.subplots(figsize=(9, 5))
-    for key in history:
-        ax.plot(np.log10(np.array(history[key]) + 1e-15), label=key)
-    ax.set_xlabel("Epoch"); ax.set_ylabel("log₁₀(loss)")
-    ax.set_title("Training History"); ax.legend(); ax.grid(True)
-    plt.tight_layout()
-    if save_dir:
-        path = os.path.join(save_dir, "training_history.png")
-        plt.savefig(path, dpi=150, bbox_inches="tight")
-        print(f"  Saved → {path}")
-    plt.show()
 
 
 # ============================================================================
