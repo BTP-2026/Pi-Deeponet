@@ -1,0 +1,18 @@
+Loading data ...
+Forcing: 4300 pts  f in [0.000, 999.987]
+COMSOL: 41 samples  v0=[0.0, 20.0]  u in [-0.000, 25.974]
+
+Device: cpu  |  params: 50,113
+Branch: 1 -> [64, 64] -> 128
+Trunk:  34 -> [128, 128] -> 128  (Fourier n=8)
+Resumed weights from: /home/aditya/dev/btp/output_v0_run1/model_best.pth
+Points  x=0:58  x=1:58  Neumann:112  Interior:4072  Sum:4300
+
+============================================================
+ Training  |  41 samples  |  10000 epochs
+ w_res=1.0  w_d=500.0  w_neu=10.0  S=20.0
+ warmup=0  lr=0.001  v0_zero_weight=3.0
+============================================================
+
+Epoch     1/10000 | loss=7.4879e+01  res=2.8332e+01  d0=6.3095e-02  d1=2.8339e-02  neu=8.3113e-02  w_res=1.000  lr=1.00e-03  time=0.0min
+Epoch    50/10000 | loss=4.0460e+02  res=3.7865e+02  d0=3.3619e-02  d1=1.6274e-02  neu=1.0081e-01  w_res=1.000  lr=1.00e-03  time=2.2min
