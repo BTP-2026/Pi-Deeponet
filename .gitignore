@@ -1,2 +1,8 @@
 .venv
 .claude
+__pycache__/
+*.pyc
+*.pth
+*.npz
+history.csv
+/tmp/
