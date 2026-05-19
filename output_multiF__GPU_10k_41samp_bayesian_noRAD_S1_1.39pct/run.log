@@ -1,0 +1,300 @@
+
+Runtime device check
+  torch: 2.11.0+cu130
+  torch CUDA build: 13.0
+  torch.cuda.is_available(): True
+  selected GPU: NVIDIA L4
+  compute capability: 8.9
+  GPU memory: 22.04 GiB
+  TF32 enabled: True
+Loading data ...
+Loading forcing file (may take a moment for large meshes)...
+Loading solution file...
+Mesh: 28570 pts
+Forcing: 41 functions  f in [0.000, 999.994]
+Samples: 41  v0=[0.0, 20.0]  x0=[0.10, 0.50]  y0=[0.30, 0.70]  u in [-0.000, 31.755]
+
+Device: cuda  |  params: 50,241
+Branch: 3 (v0,x0,y0) -> [64, 64] -> 128
+Trunk:  34 -> [128, 128] -> 128  (Fourier n=8)
+Points  x=0:151  x=1:151  Neumann:298  Interior:27970  Sum:28570
+
+============================================================
+ Training  |  41 samples  |  10000 epochs
+ num_batches=2  minibatch_size=21  steps_per_epoch=2
+ Bayesian init weights: res=1.0  d=100.0  neu=10.0  S=1.0
+ warmup=500  lr=0.001  v0_zero_weight=1.0
+============================================================
+
+Epoch     1/10000 | loss=1.4297e+04  res=1.5217e+05  d0=1.3415e+02  d1=1.7375e-01  neu=5.7321e+01  w_res=9.980e-01  w_d=9.980e+01  w_neu=9.982e+00  res_warmup=0.002  lr=1.00e-03  time=0.0min
+Epoch    50/10000 | loss=4.0706e+03  res=4.1729e+04  d0=2.1767e+00  d1=1.7946e+00  neu=1.7549e+00  w_res=8.811e-01  w_d=9.458e+01  w_neu=9.721e+00  res_warmup=0.100  lr=1.00e-03  time=1.6min
+Epoch   100/10000 | loss=5.6465e+03  res=3.4169e+04  d0=2.3576e+00  d1=1.6679e+00  neu=1.9894e+00  w_res=7.677e-01  w_d=9.368e+01  w_neu=9.500e+00  res_warmup=0.200  lr=1.00e-03  time=3.2min
+Epoch   150/10000 | loss=6.6955e+03  res=3.1398e+04  d0=2.3332e+00  d1=1.2228e+00  neu=2.8056e+00  w_res=6.723e-01  w_d=9.267e+01  w_neu=9.228e+00  res_warmup=0.300  lr=9.99e-04  time=4.8min
+Epoch   200/10000 | loss=6.5608e+03  res=2.6593e+04  d0=1.6285e+00  d1=1.0794e+00  neu=1.5589e+00  w_res=5.917e-01  w_d=9.151e+01  w_neu=8.987e+00  res_warmup=0.400  lr=9.99e-04  time=6.4min
+Epoch   250/10000 | loss=6.3687e+03  res=2.3486e+04  d0=1.1970e+00  d1=6.6022e-01  neu=1.5535e+00  w_res=5.265e-01  w_d=9.059e+01  w_neu=8.783e+00  res_warmup=0.500  lr=9.98e-04  time=8.0min
+Epoch   300/10000 | loss=6.5403e+03  res=2.2591e+04  d0=1.3622e+00  d1=6.3488e-01  neu=3.0805e+00  w_res=4.670e-01  w_d=8.954e+01  w_neu=8.498e+00  res_warmup=0.600  lr=9.98e-04  time=9.6min
+Epoch   350/10000 | loss=6.4496e+03  res=2.1333e+04  d0=1.2568e+00  d1=4.5566e-01  neu=2.0716e+00  w_res=4.203e-01  w_d=8.864e+01  w_neu=8.247e+00  res_warmup=0.700  lr=9.97e-04  time=11.2min
+Epoch   400/10000 | loss=5.7366e+03  res=1.8379e+04  d0=1.4712e+00  d1=5.8728e-01  neu=2.0792e+00  w_res=3.767e-01  w_d=8.727e+01  w_neu=7.888e+00  res_warmup=0.800  lr=9.96e-04  time=12.8min
+Epoch   450/10000 | loss=4.8164e+03  res=1.4894e+04  d0=1.6330e+00  d1=7.3645e-01  neu=1.8896e+00  w_res=3.430e-01  w_d=8.588e+01  w_neu=7.603e+00  res_warmup=0.900  lr=9.95e-04  time=14.4min
+Epoch   500/10000 | loss=4.1274e+03  res=1.2201e+04  d0=1.8139e+00  d1=9.7074e-01  neu=1.6557e+00  w_res=3.181e-01  w_d=8.439e+01  w_neu=7.330e+00  res_warmup=1.000  lr=9.94e-04  time=16.0min
+Epoch   550/10000 | loss=2.9708e+03  res=9.2581e+03  d0=1.5253e+00  d1=5.4835e-01  neu=3.6157e+00  w_res=2.999e-01  w_d=8.293e+01  w_neu=6.960e+00  res_warmup=1.000  lr=9.93e-04  time=17.6min
+Epoch   600/10000 | loss=2.4662e+03  res=8.0351e+03  d0=1.3237e+00  d1=4.0661e-01  neu=4.3642e+00  w_res=2.863e-01  w_d=8.175e+01  w_neu=6.443e+00  res_warmup=1.000  lr=9.91e-04  time=19.2min
+Epoch   650/10000 | loss=1.8750e+03  res=6.2781e+03  d0=1.2594e+00  d1=2.8601e-01  neu=5.4773e+00  w_res=2.742e-01  w_d=8.065e+01  w_neu=5.967e+00  res_warmup=1.000  lr=9.90e-04  time=20.8min
+Epoch   700/10000 | loss=1.5462e+03  res=5.3648e+03  d0=1.0786e+00  d1=1.6124e-01  neu=5.8797e+00  w_res=2.645e-01  w_d=7.970e+01  w_neu=5.515e+00  res_warmup=1.000  lr=9.88e-04  time=22.4min
+Epoch   750/10000 | loss=1.2718e+03  res=4.4997e+03  d0=1.0512e+00  d1=1.4281e-01  neu=5.6234e+00  w_res=2.563e-01  w_d=7.885e+01  w_neu=5.091e+00  res_warmup=1.000  lr=9.86e-04  time=24.0min
+Epoch   800/10000 | loss=1.2222e+03  res=4.4700e+03  d0=9.3873e-01  d1=1.2337e-01  neu=6.3799e+00  w_res=2.491e-01  w_d=7.803e+01  w_neu=4.696e+00  res_warmup=1.000  lr=9.84e-04  time=25.6min
+Epoch   850/10000 | loss=1.2732e+03  res=4.8348e+03  d0=9.3653e-01  d1=2.2131e-01  neu=4.6679e+00  w_res=2.415e-01  w_d=7.717e+01  w_neu=4.348e+00  res_warmup=1.000  lr=9.82e-04  time=27.2min
+Epoch   900/10000 | loss=1.0050e+03  res=3.8680e+03  d0=8.4958e-01  d1=1.3873e-01  neu=6.0842e+00  w_res=2.350e-01  w_d=7.633e+01  w_neu=4.029e+00  res_warmup=1.000  lr=9.80e-04  time=28.8min
+Epoch   950/10000 | loss=8.5337e+02  res=3.3325e+03  d0=7.9142e-01  d1=1.0125e-01  neu=6.7560e+00  w_res=2.295e-01  w_d=7.556e+01  w_neu=3.717e+00  res_warmup=1.000  lr=9.78e-04  time=30.4min
+Epoch  1000/10000 | loss=7.5446e+02  res=2.9719e+03  d0=7.4821e-01  d1=1.1218e-01  neu=8.1618e+00  w_res=2.241e-01  w_d=7.480e+01  w_neu=3.420e+00  res_warmup=1.000  lr=9.76e-04  time=32.0min
+Epoch  1050/10000 | loss=6.2445e+02  res=2.4703e+03  d0=6.7569e-01  d1=8.4125e-02  neu=9.3468e+00  w_res=2.196e-01  w_d=7.408e+01  w_neu=3.140e+00  res_warmup=1.000  lr=9.73e-04  time=33.6min
+Epoch  1100/10000 | loss=5.9136e+02  res=2.3909e+03  d0=6.2511e-01  d1=8.5826e-02  neu=9.4478e+00  w_res=2.156e-01  w_d=7.341e+01  w_neu=2.884e+00  res_warmup=1.000  lr=9.70e-04  time=35.2min
+Epoch  1150/10000 | loss=6.5736e+02  res=2.7655e+03  d0=5.8813e-01  d1=1.0559e-01  neu=8.9657e+00  w_res=2.121e-01  w_d=7.278e+01  w_neu=2.647e+00  res_warmup=1.000  lr=9.68e-04  time=36.7min
+Epoch  1200/10000 | loss=5.5235e+02  res=2.3223e+03  d0=5.5251e-01  d1=6.7035e-02  neu=1.0936e+01  w_res=2.086e-01  w_d=7.216e+01  w_neu=2.436e+00  res_warmup=1.000  lr=9.65e-04  time=38.3min
+Epoch  1250/10000 | loss=4.5468e+02  res=1.9229e+03  d0=4.8798e-01  d1=6.3569e-02  neu=1.0462e+01  w_res=2.055e-01  w_d=7.158e+01  w_neu=2.243e+00  res_warmup=1.000  lr=9.62e-04  time=39.9min
+Epoch  1300/10000 | loss=4.0561e+02  res=1.7237e+03  d0=4.5053e-01  d1=6.1020e-02  neu=1.1210e+01  w_res=2.027e-01  w_d=7.103e+01  w_neu=2.069e+00  res_warmup=1.000  lr=9.59e-04  time=41.5min
+Epoch  1350/10000 | loss=4.3143e+02  res=1.8983e+03  d0=4.1375e-01  d1=8.5326e-02  neu=1.0328e+01  w_res=2.000e-01  w_d=7.051e+01  w_neu=1.911e+00  res_warmup=1.000  lr=9.56e-04  time=43.1min
+Epoch  1400/10000 | loss=3.3342e+02  res=1.4387e+03  d0=3.6652e-01  d1=5.0098e-02  neu=1.3094e+01  w_res=1.975e-01  w_d=7.001e+01  w_neu=1.769e+00  res_warmup=1.000  lr=9.52e-04  time=44.7min
+Epoch  1450/10000 | loss=3.1658e+02  res=1.3881e+03  d0=3.4873e-01  d1=4.7770e-02  neu=1.2781e+01  w_res=1.953e-01  w_d=6.955e+01  w_neu=1.640e+00  res_warmup=1.000  lr=9.49e-04  time=46.3min
+Epoch  1500/10000 | loss=3.7310e+02  res=1.7282e+03  d0=3.1674e-01  d1=5.3841e-02  neu=1.1481e+01  w_res=1.926e-01  w_d=6.910e+01  w_neu=1.528e+00  res_warmup=1.000  lr=9.46e-04  time=47.9min
+Epoch  1550/10000 | loss=2.6686e+02  res=1.1999e+03  d0=2.8640e-01  d1=4.6346e-02  neu=1.3010e+01  w_res=1.903e-01  w_d=6.867e+01  w_neu=1.422e+00  res_warmup=1.000  lr=9.42e-04  time=49.5min
+Epoch  1600/10000 | loss=2.2160e+02  res=9.8819e+02  d0=2.6153e-01  d1=4.1358e-02  neu=1.3298e+01  w_res=1.883e-01  w_d=6.827e+01  w_neu=1.327e+00  res_warmup=1.000  lr=9.38e-04  time=51.1min
+Epoch  1650/10000 | loss=1.8976e+02  res=8.4283e+02  d0=2.3909e-01  d1=3.7552e-02  neu=1.3357e+01  w_res=1.864e-01  w_d=6.790e+01  w_neu=1.241e+00  res_warmup=1.000  lr=9.34e-04  time=52.7min
+Epoch  1700/10000 | loss=2.2688e+02  res=1.0595e+03  d0=2.3695e-01  d1=3.3800e-02  neu=1.3630e+01  w_res=1.844e-01  w_d=6.754e+01  w_neu=1.163e+00  res_warmup=1.000  lr=9.30e-04  time=54.3min
+Epoch  1750/10000 | loss=2.0479e+02  res=9.6344e+02  d0=2.0569e-01  d1=3.2084e-02  neu=1.4458e+01  w_res=1.822e-01  w_d=6.719e+01  w_neu=1.092e+00  res_warmup=1.000  lr=9.26e-04  time=55.9min
+Epoch  1800/10000 | loss=2.5411e+02  res=1.2579e+03  d0=1.9509e-01  d1=2.8829e-02  neu=1.4694e+01  w_res=1.801e-01  w_d=6.685e+01  w_neu=1.028e+00  res_warmup=1.000  lr=9.22e-04  time=57.5min
+Epoch  1850/10000 | loss=1.6856e+02  res=8.0420e+02  d0=1.8719e-01  d1=2.9216e-02  neu=1.3742e+01  w_res=1.781e-01  w_d=6.654e+01  w_neu=9.674e-01  res_warmup=1.000  lr=9.18e-04  time=59.1min
+Epoch  1900/10000 | loss=1.1672e+02  res=5.2397e+02  d0=1.5849e-01  d1=2.4754e-02  neu=1.5881e+01  w_res=1.764e-01  w_d=6.624e+01  w_neu=9.119e-01  res_warmup=1.000  lr=9.14e-04  time=60.7min
+Epoch  1950/10000 | loss=1.4922e+02  res=7.2850e+02  d0=1.4085e-01  d1=2.8395e-02  neu=1.4976e+01  w_res=1.749e-01  w_d=6.597e+01  w_neu=8.601e-01  res_warmup=1.000  lr=9.09e-04  time=62.3min
+Epoch  2000/10000 | loss=1.7084e+02  res=8.4933e+02  d0=1.8077e-01  d1=2.1589e-02  neu=1.5399e+01  w_res=1.733e-01  w_d=6.571e+01  w_neu=8.133e-01  res_warmup=1.000  lr=9.05e-04  time=63.9min
+Epoch  2050/10000 | loss=1.1536e+02  res=5.5618e+02  d0=1.2140e-01  d1=2.0161e-02  neu=1.6561e+01  w_res=1.717e-01  w_d=6.545e+01  w_neu=7.700e-01  res_warmup=1.000  lr=9.00e-04  time=65.5min
+Epoch  2100/10000 | loss=9.7819e+01  res=4.7004e+02  d0=1.0472e-01  d1=2.1285e-02  neu=1.5917e+01  w_res=1.703e-01  w_d=6.522e+01  w_neu=7.296e-01  res_warmup=1.000  lr=8.95e-04  time=67.1min
+Epoch  2150/10000 | loss=1.0809e+02  res=5.4072e+02  d0=9.5996e-02  d1=2.0302e-02  neu=1.6309e+01  w_res=1.688e-01  w_d=6.499e+01  w_neu=6.925e-01  res_warmup=1.000  lr=8.90e-04  time=68.7min
+Epoch  2200/10000 | loss=9.6204e+01  res=4.8073e+02  d0=8.4343e-02  d1=1.9244e-02  neu=1.6653e+01  w_res=1.674e-01  w_d=6.479e+01  w_neu=6.574e-01  res_warmup=1.000  lr=8.85e-04  time=70.3min
+Epoch  2250/10000 | loss=8.1099e+01  res=4.0208e+02  d0=7.5306e-02  d1=1.8771e-02  neu=1.6110e+01  w_res=1.662e-01  w_d=6.461e+01  w_neu=6.251e-01  res_warmup=1.000  lr=8.80e-04  time=71.9min
+Epoch  2300/10000 | loss=7.3588e+01  res=3.6521e+02  d0=6.6535e-02  d1=1.8023e-02  neu=1.6266e+01  w_res=1.651e-01  w_d=6.444e+01  w_neu=5.951e-01  res_warmup=1.000  lr=8.75e-04  time=73.5min
+Epoch  2350/10000 | loss=9.9311e+01  res=5.2842e+02  d0=7.3752e-02  d1=1.8188e-02  neu=1.5248e+01  w_res=1.637e-01  w_d=6.424e+01  w_neu=5.673e-01  res_warmup=1.000  lr=8.70e-04  time=75.1min
+Epoch  2400/10000 | loss=8.5085e+01  res=4.4819e+02  d0=7.0736e-02  d1=1.7641e-02  neu=1.5605e+01  w_res=1.622e-01  w_d=6.406e+01  w_neu=5.415e-01  res_warmup=1.000  lr=8.65e-04  time=76.7min
+Epoch  2450/10000 | loss=7.9357e+01  res=4.2416e+02  d0=5.7114e-02  d1=1.5524e-02  neu=1.5848e+01  w_res=1.607e-01  w_d=6.390e+01  w_neu=5.172e-01  res_warmup=1.000  lr=8.59e-04  time=78.3min
+Epoch  2500/10000 | loss=7.8730e+01  res=4.2612e+02  d0=5.2260e-02  d1=1.4635e-02  neu=1.6568e+01  w_res=1.593e-01  w_d=6.372e+01  w_neu=4.943e-01  res_warmup=1.000  lr=8.54e-04  time=79.9min
+Epoch  2550/10000 | loss=1.0800e+02  res=6.2583e+02  d0=4.5812e-02  d1=1.5741e-02  neu=1.4272e+01  w_res=1.580e-01  w_d=6.359e+01  w_neu=4.727e-01  res_warmup=1.000  lr=8.48e-04  time=81.5min
+Epoch  2600/10000 | loss=6.8068e+01  res=3.7418e+02  d0=4.2677e-02  d1=1.4071e-02  neu=1.6214e+01  w_res=1.567e-01  w_d=6.346e+01  w_neu=4.525e-01  res_warmup=1.000  lr=8.42e-04  time=83.1min
+Epoch  2650/10000 | loss=6.4403e+01  res=3.5269e+02  d0=4.8304e-02  d1=1.1363e-02  neu=1.6777e+01  w_res=1.554e-01  w_d=6.333e+01  w_neu=4.335e-01  res_warmup=1.000  lr=8.37e-04  time=84.7min
+Epoch  2700/10000 | loss=8.6403e+01  res=5.0562e+02  d0=3.7602e-02  d1=1.1403e-02  neu=1.6153e+01  w_res=1.542e-01  w_d=6.323e+01  w_neu=4.155e-01  res_warmup=1.000  lr=8.31e-04  time=86.3min
+Epoch  2750/10000 | loss=5.5945e+01  res=3.1524e+02  d0=3.0050e-02  d1=9.7890e-03  neu=1.6467e+01  w_res=1.529e-01  w_d=6.313e+01  w_neu=3.986e-01  res_warmup=1.000  lr=8.25e-04  time=87.9min
+Epoch  2800/10000 | loss=5.5741e+01  res=3.1660e+02  d0=3.4314e-02  d1=1.0504e-02  neu=1.6082e+01  w_res=1.518e-01  w_d=6.304e+01  w_neu=3.828e-01  res_warmup=1.000  lr=8.19e-04  time=89.5min
+Epoch  2850/10000 | loss=4.9863e+01  res=2.8359e+02  d0=2.6610e-02  d1=8.7282e-03  neu=1.6791e+01  w_res=1.506e-01  w_d=6.295e+01  w_neu=3.678e-01  res_warmup=1.000  lr=8.13e-04  time=91.1min
+Epoch  2900/10000 | loss=4.0865e+01  res=2.2998e+02  d0=2.2748e-02  d1=8.7620e-03  neu=1.6108e+01  w_res=1.495e-01  w_d=6.289e+01  w_neu=3.536e-01  res_warmup=1.000  lr=8.07e-04  time=92.7min
+Epoch  2950/10000 | loss=4.3396e+01  res=2.5111e+02  d0=1.7945e-02  d1=7.7583e-03  neu=1.6512e+01  w_res=1.486e-01  w_d=6.284e+01  w_neu=3.401e-01  res_warmup=1.000  lr=8.00e-04  time=94.3min
+Epoch  3000/10000 | loss=3.2784e+01  res=1.8254e+02  d0=1.6892e-02  d1=7.1548e-03  neu=1.6534e+01  w_res=1.477e-01  w_d=6.280e+01  w_neu=3.274e-01  res_warmup=1.000  lr=7.94e-04  time=95.9min
+Epoch  3050/10000 | loss=5.5439e+01  res=3.3892e+02  d0=2.0851e-02  d1=7.1159e-03  neu=1.5860e+01  w_res=1.468e-01  w_d=6.277e+01  w_neu=3.155e-01  res_warmup=1.000  lr=7.88e-04  time=97.5min
+Epoch  3100/10000 | loss=4.1248e+01  res=2.4248e+02  d0=2.3771e-02  d1=5.9213e-03  neu=1.6735e+01  w_res=1.456e-01  w_d=6.273e+01  w_neu=3.041e-01  res_warmup=1.000  lr=7.81e-04  time=99.0min
+Epoch  3150/10000 | loss=4.3395e+01  res=2.6384e+02  d0=1.4323e-02  d1=5.7031e-03  neu=1.6895e+01  w_res=1.446e-01  w_d=6.269e+01  w_neu=2.933e-01  res_warmup=1.000  lr=7.75e-04  time=100.6min
+Epoch  3200/10000 | loss=3.6299e+01  res=2.1851e+02  d0=1.3286e-02  d1=5.3388e-03  neu=1.6551e+01  w_res=1.436e-01  w_d=6.266e+01  w_neu=2.830e-01  res_warmup=1.000  lr=7.68e-04  time=102.2min
+Epoch  3250/10000 | loss=3.2245e+01  res=1.8987e+02  d0=1.6285e-02  d1=5.2462e-03  neu=1.7192e+01  w_res=1.427e-01  w_d=6.264e+01  w_neu=2.733e-01  res_warmup=1.000  lr=7.61e-04  time=103.8min
+Epoch  3300/10000 | loss=3.9657e+01  res=2.4443e+02  d0=2.1286e-02  d1=5.7650e-03  neu=1.5887e+01  w_res=1.416e-01  w_d=6.261e+01  w_neu=2.641e-01  res_warmup=1.000  lr=7.55e-04  time=105.4min
+Epoch  3350/10000 | loss=3.2202e+01  res=1.9814e+02  d0=1.0897e-02  d1=4.7906e-03  neu=1.6495e+01  w_res=1.404e-01  w_d=6.257e+01  w_neu=2.552e-01  res_warmup=1.000  lr=7.48e-04  time=107.0min
+Epoch  3400/10000 | loss=3.3285e+01  res=2.0416e+02  d0=2.0151e-02  d1=4.0817e-03  neu=1.6546e+01  w_res=1.393e-01  w_d=6.254e+01  w_neu=2.468e-01  res_warmup=1.000  lr=7.41e-04  time=108.6min
+Epoch  3450/10000 | loss=3.2528e+01  res=2.0578e+02  d0=9.6365e-03  d1=5.2606e-03  neu=1.6118e+01  w_res=1.383e-01  w_d=6.252e+01  w_neu=2.387e-01  res_warmup=1.000  lr=7.34e-04  time=110.2min
+Epoch  3500/10000 | loss=2.4305e+01  res=1.4794e+02  d0=9.6046e-03  d1=4.8681e-03  neu=1.6320e+01  w_res=1.373e-01  w_d=6.250e+01  w_neu=2.310e-01  res_warmup=1.000  lr=7.27e-04  time=111.8min
+Epoch  3550/10000 | loss=2.2668e+01  res=1.3827e+02  d0=9.3128e-03  d1=3.9003e-03  neu=1.6161e+01  w_res=1.365e-01  w_d=6.251e+01  w_neu=2.237e-01  res_warmup=1.000  lr=7.20e-04  time=113.4min
+Epoch  3600/10000 | loss=2.9376e+01  res=1.8895e+02  d0=1.0243e-02  d1=3.4142e-03  neu=1.6065e+01  w_res=1.357e-01  w_d=6.252e+01  w_neu=2.167e-01  res_warmup=1.000  lr=7.13e-04  time=115.0min
+Epoch  3650/10000 | loss=2.0823e+01  res=1.2818e+02  d0=8.9261e-03  d1=3.0857e-03  neu=1.5884e+01  w_res=1.350e-01  w_d=6.254e+01  w_neu=2.101e-01  res_warmup=1.000  lr=7.06e-04  time=116.6min
+Epoch  3700/10000 | loss=2.0115e+01  res=1.2444e+02  d0=8.2928e-03  d1=2.7762e-03  neu=1.5933e+01  w_res=1.343e-01  w_d=6.256e+01  w_neu=2.038e-01  res_warmup=1.000  lr=6.99e-04  time=118.2min
+Epoch  3750/10000 | loss=3.2233e+01  res=2.1574e+02  d0=8.5667e-03  d1=5.5153e-03  neu=1.5564e+01  w_res=1.333e-01  w_d=6.257e+01  w_neu=1.979e-01  res_warmup=1.000  lr=6.92e-04  time=119.8min
+Epoch  3800/10000 | loss=2.8257e+01  res=1.8949e+02  d0=8.7908e-03  d1=2.4285e-03  neu=1.5376e+01  w_res=1.323e-01  w_d=6.259e+01  w_neu=1.922e-01  res_warmup=1.000  lr=6.84e-04  time=121.4min
+Epoch  3850/10000 | loss=2.5940e+01  res=1.7298e+02  d0=8.5283e-03  d1=2.7735e-03  neu=1.5811e+01  w_res=1.313e-01  w_d=6.260e+01  w_neu=1.867e-01  res_warmup=1.000  lr=6.77e-04  time=123.0min
+Epoch  3900/10000 | loss=2.0794e+01  res=1.3623e+02  d0=6.5943e-03  d1=2.3350e-03  neu=1.5754e+01  w_res=1.304e-01  w_d=6.265e+01  w_neu=1.815e-01  res_warmup=1.000  lr=6.70e-04  time=124.6min
+Epoch  3950/10000 | loss=1.6769e+01  res=1.0619e+02  d0=6.9259e-03  d1=2.2757e-03  neu=1.5756e+01  w_res=1.297e-01  w_d=6.270e+01  w_neu=1.765e-01  res_warmup=1.000  lr=6.62e-04  time=126.2min
+Epoch  4000/10000 | loss=1.6446e+01  res=1.0392e+02  d0=8.0368e-03  d1=1.9721e-03  neu=1.5948e+01  w_res=1.290e-01  w_d=6.276e+01  w_neu=1.717e-01  res_warmup=1.000  lr=6.55e-04  time=127.8min
+Epoch  4050/10000 | loss=1.9074e+01  res=1.2513e+02  d0=8.8335e-03  d1=2.1725e-03  neu=1.5833e+01  w_res=1.281e-01  w_d=6.282e+01  w_neu=1.672e-01  res_warmup=1.000  lr=6.47e-04  time=129.4min
+Epoch  4100/10000 | loss=1.5051e+01  res=9.5733e+01  d0=6.3473e-03  d1=1.7454e-03  neu=1.6118e+01  w_res=1.272e-01  w_d=6.287e+01  w_neu=1.629e-01  res_warmup=1.000  lr=6.40e-04  time=131.0min
+Epoch  4150/10000 | loss=1.6610e+01  res=1.1015e+02  d0=6.5808e-03  d1=2.1054e-03  neu=1.4920e+01  w_res=1.264e-01  w_d=6.294e+01  w_neu=1.587e-01  res_warmup=1.000  lr=6.32e-04  time=132.6min
+Epoch  4200/10000 | loss=2.2000e+01  res=1.2705e+02  d0=5.9728e-02  d1=2.5173e-03  neu=1.5077e+01  w_res=1.255e-01  w_d=6.292e+01  w_neu=1.548e-01  res_warmup=1.000  lr=6.25e-04  time=134.2min
+Epoch  4250/10000 | loss=1.5397e+01  res=1.0062e+02  d0=8.8687e-03  d1=1.9910e-03  neu=1.5589e+01  w_res=1.245e-01  w_d=6.269e+01  w_neu=1.510e-01  res_warmup=1.000  lr=6.17e-04  time=135.8min
+Epoch  4300/10000 | loss=2.0602e+01  res=1.4172e+02  d0=1.1870e-02  d1=2.8271e-03  neu=1.5532e+01  w_res=1.236e-01  w_d=6.278e+01  w_neu=1.474e-01  res_warmup=1.000  lr=6.09e-04  time=137.4min
+Epoch  4350/10000 | loss=1.0971e+01  res=6.8617e+01  d0=5.3867e-03  d1=1.3470e-03  neu=1.5408e+01  w_res=1.229e-01  w_d=6.287e+01  w_neu=1.439e-01  res_warmup=1.000  lr=6.02e-04  time=139.0min
+Epoch  4400/10000 | loss=1.3335e+01  res=8.8881e+01  d0=4.9858e-03  d1=1.2244e-03  neu=1.5275e+01  w_res=1.224e-01  w_d=6.298e+01  w_neu=1.406e-01  res_warmup=1.000  lr=5.94e-04  time=140.6min
+Epoch  4450/10000 | loss=2.0030e+01  res=1.4397e+02  d0=6.6198e-03  d1=1.8099e-03  neu=1.4715e+01  w_res=1.217e-01  w_d=6.309e+01  w_neu=1.375e-01  res_warmup=1.000  lr=5.86e-04  time=142.2min
+Epoch  4500/10000 | loss=1.2056e+01  res=8.0314e+01  d0=5.0431e-03  d1=1.1282e-03  neu=1.4745e+01  w_res=1.209e-01  w_d=6.320e+01  w_neu=1.345e-01  res_warmup=1.000  lr=5.79e-04  time=143.8min
+Epoch  4550/10000 | loss=1.2405e+01  res=8.2598e+01  d0=6.5083e-03  d1=1.0903e-03  neu=1.5180e+01  w_res=1.202e-01  w_d=6.333e+01  w_neu=1.316e-01  res_warmup=1.000  lr=5.71e-04  time=145.4min
+Epoch  4600/10000 | loss=1.2412e+01  res=8.4619e+01  d0=4.4797e-03  d1=1.4297e-03  neu=1.4821e+01  w_res=1.194e-01  w_d=6.346e+01  w_neu=1.289e-01  res_warmup=1.000  lr=5.63e-04  time=147.0min
+Epoch  4650/10000 | loss=9.5932e+00  res=6.1761e+01  d0=4.3164e-03  d1=1.2164e-03  neu=1.4740e+01  w_res=1.187e-01  w_d=6.360e+01  w_neu=1.263e-01  res_warmup=1.000  lr=5.55e-04  time=148.6min
+Epoch  4700/10000 | loss=1.1625e+01  res=7.9617e+01  d0=4.5403e-03  d1=1.0153e-03  neu=1.4533e+01  w_res=1.181e-01  w_d=6.375e+01  w_neu=1.238e-01  res_warmup=1.000  lr=5.48e-04  time=150.2min
+Epoch  4750/10000 | loss=9.9275e+00  res=6.5294e+01  d0=4.8775e-03  d1=1.5850e-03  neu=1.4444e+01  w_res=1.174e-01  w_d=6.391e+01  w_neu=1.214e-01  res_warmup=1.000  lr=5.40e-04  time=151.8min
+Epoch  4800/10000 | loss=8.3351e+00  res=5.3010e+01  d0=4.1820e-03  d1=9.4070e-04  neu=1.4269e+01  w_res=1.168e-01  w_d=6.406e+01  w_neu=1.192e-01  res_warmup=1.000  lr=5.32e-04  time=153.4min
+Epoch  4850/10000 | loss=1.8070e+01  res=1.3110e+02  d0=1.6069e-02  d1=1.6634e-03  neu=1.4561e+01  w_res=1.150e-01  w_d=6.387e+01  w_neu=1.171e-01  res_warmup=1.000  lr=5.24e-04  time=154.9min
+Epoch  4900/10000 | loss=1.3000e+01  res=9.4158e+01  d0=4.3842e-03  d1=8.5051e-04  neu=1.5143e+01  w_res=1.141e-01  w_d=6.386e+01  w_neu=1.150e-01  res_warmup=1.000  lr=5.16e-04  time=156.5min
+Epoch  4950/10000 | loss=9.1299e+00  res=6.1131e+01  d0=4.7070e-03  d1=8.4386e-04  neu=1.4522e+01  w_res=1.135e-01  w_d=6.404e+01  w_neu=1.130e-01  res_warmup=1.000  lr=5.08e-04  time=158.1min
+Epoch  5000/10000 | loss=1.2512e+01  res=9.1276e+01  d0=4.0735e-03  d1=2.7647e-03  neu=1.4126e+01  w_res=1.127e-01  w_d=6.420e+01  w_neu=1.110e-01  res_warmup=1.000  lr=5.01e-04  time=159.7min
+Epoch  5050/10000 | loss=8.8438e+00  res=6.0108e+01  d0=3.8220e-03  d1=8.5693e-04  neu=1.4378e+01  w_res=1.120e-01  w_d=6.440e+01  w_neu=1.092e-01  res_warmup=1.000  lr=4.93e-04  time=161.3min
+Epoch  5100/10000 | loss=9.7004e+00  res=6.5989e+01  d0=7.7316e-03  d1=8.9865e-04  neu=1.4250e+01  w_res=1.115e-01  w_d=6.462e+01  w_neu=1.075e-01  res_warmup=1.000  lr=4.85e-04  time=162.9min
+Epoch  5150/10000 | loss=9.7845e+00  res=6.8908e+01  d0=4.7456e-03  d1=1.1391e-03  neu=1.4110e+01  w_res=1.108e-01  w_d=6.483e+01  w_neu=1.058e-01  res_warmup=1.000  lr=4.77e-04  time=164.5min
+Epoch  5200/10000 | loss=9.0284e+00  res=6.3383e+01  d0=3.7630e-03  d1=7.3963e-04  neu=1.4040e+01  w_res=1.101e-01  w_d=6.505e+01  w_neu=1.043e-01  res_warmup=1.000  lr=4.69e-04  time=166.1min
+Epoch  5250/10000 | loss=7.7478e+00  res=5.2652e+01  d0=3.4047e-03  d1=6.9106e-04  neu=1.3674e+01  w_res=1.095e-01  w_d=6.530e+01  w_neu=1.028e-01  res_warmup=1.000  lr=4.61e-04  time=167.7min
+Epoch  5300/10000 | loss=9.4043e+00  res=6.6882e+01  d0=5.3189e-03  d1=1.1917e-03  neu=1.3488e+01  w_res=1.089e-01  w_d=6.554e+01  w_neu=1.014e-01  res_warmup=1.000  lr=4.53e-04  time=169.3min
+Epoch  5350/10000 | loss=1.0618e+01  res=7.3876e+01  d0=1.2806e-02  d1=1.1061e-03  neu=1.3609e+01  w_res=1.083e-01  w_d=6.578e+01  w_neu=1.001e-01  res_warmup=1.000  lr=4.46e-04  time=170.9min
+Epoch  5400/10000 | loss=7.0617e+00  res=4.7641e+01  d0=2.9302e-03  d1=5.4947e-04  neu=1.3612e+01  w_res=1.078e-01  w_d=6.601e+01  w_neu=9.882e-02  res_warmup=1.000  lr=4.38e-04  time=172.5min
+Epoch  5450/10000 | loss=7.3759e+00  res=5.0633e+01  d0=3.3874e-03  d1=5.7458e-04  neu=1.3477e+01  w_res=1.073e-01  w_d=6.632e+01  w_neu=9.764e-02  res_warmup=1.000  lr=4.30e-04  time=174.1min
+Epoch  5500/10000 | loss=6.2297e+00  res=4.0653e+01  d0=2.8844e-03  d1=5.0742e-04  neu=1.3302e+01  w_res=1.069e-01  w_d=6.665e+01  w_neu=9.656e-02  res_warmup=1.000  lr=4.22e-04  time=175.7min
+Epoch  5550/10000 | loss=7.4087e+00  res=5.1572e+01  d0=3.3061e-03  d1=6.9125e-04  neu=1.3256e+01  w_res=1.065e-01  w_d=6.698e+01  w_neu=9.555e-02  res_warmup=1.000  lr=4.15e-04  time=177.3min
+Epoch  5600/10000 | loss=5.9977e+00  res=3.9205e+01  d0=2.7342e-03  d1=5.5425e-04  neu=1.2967e+01  w_res=1.060e-01  w_d=6.732e+01  w_neu=9.464e-02  res_warmup=1.000  lr=4.07e-04  time=178.9min
+Epoch  5650/10000 | loss=7.4851e+00  res=5.3296e+01  d0=2.7029e-03  d1=6.1310e-04  neu=1.3148e+01  w_res=1.056e-01  w_d=6.768e+01  w_neu=9.380e-02  res_warmup=1.000  lr=3.99e-04  time=180.5min
+Epoch  5700/10000 | loss=5.8598e+00  res=3.6376e+01  d0=5.5920e-03  d1=7.3382e-04  neu=1.2896e+01  w_res=1.050e-01  w_d=6.801e+01  w_neu=9.303e-02  res_warmup=1.000  lr=3.92e-04  time=182.1min
+Epoch  5750/10000 | loss=7.6521e+00  res=5.4458e+01  d0=4.3905e-03  d1=7.7774e-04  neu=1.2872e+01  w_res=1.046e-01  w_d=6.834e+01  w_neu=9.233e-02  res_warmup=1.000  lr=3.84e-04  time=183.7min
+Epoch  5800/10000 | loss=5.5469e+00  res=3.6268e+01  d0=2.4479e-03  d1=5.6448e-04  neu=1.2472e+01  w_res=1.041e-01  w_d=6.874e+01  w_neu=9.170e-02  res_warmup=1.000  lr=3.76e-04  time=185.3min
+Epoch  5850/10000 | loss=5.5602e+00  res=3.6155e+01  d0=3.1148e-03  d1=5.8647e-04  neu=1.2407e+01  w_res=1.037e-01  w_d=6.917e+01  w_neu=9.113e-02  res_warmup=1.000  lr=3.69e-04  time=186.9min
+Epoch  5900/10000 | loss=5.2893e+00  res=3.4527e+01  d0=2.2883e-03  d1=4.2412e-04  neu=1.2208e+01  w_res=1.033e-01  w_d=6.961e+01  w_neu=9.063e-02  res_warmup=1.000  lr=3.61e-04  time=188.5min
+Epoch  5950/10000 | loss=5.1318e+00  res=3.3299e+01  d0=2.1807e-03  d1=3.9014e-04  neu=1.2147e+01  w_res=1.029e-01  w_d=7.007e+01  w_neu=9.020e-02  res_warmup=1.000  lr=3.54e-04  time=190.1min
+Epoch  6000/10000 | loss=5.3115e+00  res=3.5405e+01  d0=2.2728e-03  d1=4.1253e-04  neu=1.1816e+01  w_res=1.025e-01  w_d=7.055e+01  w_neu=8.984e-02  res_warmup=1.000  lr=3.46e-04  time=191.7min
+Epoch  6050/10000 | loss=5.2868e+00  res=3.5375e+01  d0=2.0314e-03  d1=4.9441e-04  neu=1.1883e+01  w_res=1.021e-01  w_d=7.105e+01  w_neu=8.956e-02  res_warmup=1.000  lr=3.39e-04  time=193.3min
+Epoch  6100/10000 | loss=5.6711e+00  res=3.8681e+01  d0=3.3360e-03  d1=9.9378e-04  neu=1.1217e+01  w_res=1.015e-01  w_d=7.144e+01  w_neu=8.934e-02  res_warmup=1.000  lr=3.31e-04  time=194.9min
+Epoch  6150/10000 | loss=4.3648e+00  res=2.7255e+01  d0=1.9252e-03  d1=3.5735e-04  neu=1.1360e+01  w_res=1.010e-01  w_d=7.193e+01  w_neu=8.917e-02  res_warmup=1.000  lr=3.24e-04  time=196.5min
+Epoch  6200/10000 | loss=4.8631e+00  res=3.2226e+01  d0=2.1966e-03  d1=4.3381e-04  neu=1.1207e+01  w_res=1.006e-01  w_d=7.247e+01  w_neu=8.905e-02  res_warmup=1.000  lr=3.17e-04  time=198.1min
+Epoch  6250/10000 | loss=5.1612e+00  res=3.4406e+01  d0=2.2574e-03  d1=1.7794e-03  neu=1.1123e+01  w_res=1.002e-01  w_d=7.298e+01  w_neu=8.901e-02  res_warmup=1.000  lr=3.09e-04  time=199.7min
+Epoch  6300/10000 | loss=4.1471e+00  res=2.5628e+01  d0=1.9105e-03  d1=3.9827e-04  neu=1.1166e+01  w_res=9.971e-02  w_d=7.343e+01  w_neu=8.903e-02  res_warmup=1.000  lr=3.02e-04  time=201.3min
+Epoch  6350/10000 | loss=4.4782e+00  res=2.9626e+01  d0=1.6945e-03  d1=3.4929e-04  neu=1.0770e+01  w_res=9.942e-02  w_d=7.405e+01  w_neu=8.911e-02  res_warmup=1.000  lr=2.95e-04  time=202.9min
+Epoch  6400/10000 | loss=4.5534e+00  res=2.9629e+01  d0=2.3457e-03  d1=8.4400e-04  neu=1.0809e+01  w_res=9.907e-02  w_d=7.469e+01  w_neu=8.926e-02  res_warmup=1.000  lr=2.88e-04  time=204.5min
+Epoch  6450/10000 | loss=3.7604e+00  res=2.2730e+01  d0=1.6506e-03  d1=3.7213e-04  neu=1.0693e+01  w_res=9.869e-02  w_d=7.531e+01  w_neu=8.948e-02  res_warmup=1.000  lr=2.81e-04  time=206.1min
+Epoch  6500/10000 | loss=4.4668e+00  res=2.9938e+01  d0=1.8501e-03  d1=4.3754e-04  neu=1.0565e+01  w_res=9.835e-02  w_d=7.591e+01  w_neu=8.976e-02  res_warmup=1.000  lr=2.74e-04  time=207.7min
+Epoch  6550/10000 | loss=3.9088e+00  res=2.4758e+01  d0=1.7073e-03  d1=3.4582e-04  neu=1.0361e+01  w_res=9.805e-02  w_d=7.662e+01  w_neu=9.009e-02  res_warmup=1.000  lr=2.67e-04  time=209.3min
+Epoch  6600/10000 | loss=4.1606e+00  res=2.6546e+01  d0=3.0414e-03  d1=5.7667e-04  neu=1.0011e+01  w_res=9.774e-02  w_d=7.731e+01  w_neu=9.049e-02  res_warmup=1.000  lr=2.60e-04  time=210.8min
+Epoch  6650/10000 | loss=3.6997e+00  res=2.2679e+01  d0=2.3346e-03  d1=4.4255e-04  neu=9.9343e+00  w_res=9.745e-02  w_d=7.797e+01  w_neu=9.096e-02  res_warmup=1.000  lr=2.53e-04  time=212.4min
+Epoch  6700/10000 | loss=3.4989e+00  res=2.1602e+01  d0=1.4472e-03  d1=2.8386e-04  neu=9.9081e+00  w_res=9.719e-02  w_d=7.874e+01  w_neu=9.151e-02  res_warmup=1.000  lr=2.46e-04  time=214.0min
+Epoch  6750/10000 | loss=3.1697e+00  res=1.8530e+01  d0=1.4127e-03  d1=2.7873e-04  neu=9.7298e+00  w_res=9.698e-02  w_d=7.954e+01  w_neu=9.211e-02  res_warmup=1.000  lr=2.40e-04  time=215.6min
+Epoch  6800/10000 | loss=3.4567e+00  res=2.1607e+01  d0=1.6931e-03  d1=3.8114e-04  neu=9.4020e+00  w_res=9.678e-02  w_d=8.034e+01  w_neu=9.280e-02  res_warmup=1.000  lr=2.33e-04  time=217.2min
+Epoch  6850/10000 | loss=2.9923e+00  res=1.7400e+01  d0=1.3843e-03  d1=2.5813e-04  neu=9.2815e+00  w_res=9.654e-02  w_d=8.115e+01  w_neu=9.355e-02  res_warmup=1.000  lr=2.26e-04  time=218.8min
+Epoch  6900/10000 | loss=3.0890e+00  res=1.8328e+01  d0=1.7769e-03  d1=2.9741e-04  neu=9.1024e+00  w_res=9.635e-02  w_d=8.198e+01  w_neu=9.438e-02  res_warmup=1.000  lr=2.20e-04  time=220.4min
+Epoch  6950/10000 | loss=2.6414e+00  res=1.4382e+01  d0=1.3852e-03  d1=2.9022e-04  neu=8.8517e+00  w_res=9.618e-02  w_d=8.282e+01  w_neu=9.527e-02  res_warmup=1.000  lr=2.13e-04  time=222.0min
+Epoch  7000/10000 | loss=3.0146e+00  res=1.8561e+01  d0=1.3286e-03  d1=2.6762e-04  neu=8.7527e+00  w_res=9.590e-02  w_d=8.368e+01  w_neu=9.624e-02  res_warmup=1.000  lr=2.07e-04  time=223.6min
+Epoch  7050/10000 | loss=3.0079e+00  res=1.8732e+01  d0=1.3859e-03  d1=3.0735e-04  neu=8.5595e+00  w_res=9.572e-02  w_d=8.458e+01  w_neu=9.726e-02  res_warmup=1.000  lr=2.01e-04  time=225.2min
+Epoch  7100/10000 | loss=2.7079e+00  res=1.5835e+01  d0=1.5016e-03  d1=2.6797e-04  neu=8.3820e+00  w_res=9.555e-02  w_d=8.548e+01  w_neu=9.835e-02  res_warmup=1.000  lr=1.94e-04  time=226.8min
+Epoch  7150/10000 | loss=3.0621e+00  res=1.9115e+01  d0=2.2774e-03  d1=3.2623e-04  neu=8.1915e+00  w_res=9.540e-02  w_d=8.639e+01  w_neu=9.949e-02  res_warmup=1.000  lr=1.88e-04  time=228.4min
+Epoch  7200/10000 | loss=3.0858e+00  res=1.9264e+01  d0=2.1661e-03  d1=1.0145e-03  neu=7.8957e+00  w_res=9.520e-02  w_d=8.719e+01  w_neu=1.007e-01  res_warmup=1.000  lr=1.82e-04  time=230.0min
+Epoch  7250/10000 | loss=2.5552e+00  res=1.5585e+01  d0=1.1933e-03  d1=2.3911e-04  neu=7.7439e+00  w_res=9.503e-02  w_d=8.809e+01  w_neu=1.020e-01  res_warmup=1.000  lr=1.76e-04  time=231.6min
+Epoch  7300/10000 | loss=2.5098e+00  res=1.5623e+01  d0=1.1569e-03  d1=2.9986e-04  neu=7.3722e+00  w_res=9.491e-02  w_d=8.906e+01  w_neu=1.033e-01  res_warmup=1.000  lr=1.70e-04  time=233.2min
+Epoch  7350/10000 | loss=2.7467e+00  res=1.8446e+01  d0=1.1926e-03  d1=3.1881e-04  neu=7.1587e+00  w_res=9.476e-02  w_d=9.004e+01  w_neu=1.047e-01  res_warmup=1.000  lr=1.64e-04  time=234.8min
+Epoch  7400/10000 | loss=2.5740e+00  res=1.7010e+01  d0=1.1029e-03  d1=2.3673e-04  neu=7.0867e+00  w_res=9.463e-02  w_d=9.099e+01  w_neu=1.061e-01  res_warmup=1.000  lr=1.59e-04  time=236.4min
+Epoch  7450/10000 | loss=2.1386e+00  res=1.2807e+01  d0=1.0878e-03  d1=2.1953e-04  neu=6.8848e+00  w_res=9.453e-02  w_d=9.198e+01  w_neu=1.076e-01  res_warmup=1.000  lr=1.53e-04  time=238.0min
+Epoch  7500/10000 | loss=2.1370e+00  res=1.3156e+01  d0=1.2402e-03  d1=2.3118e-04  neu=6.5476e+00  w_res=9.444e-02  w_d=9.295e+01  w_neu=1.091e-01  res_warmup=1.000  lr=1.47e-04  time=239.6min
+Epoch  7550/10000 | loss=2.3208e+00  res=1.5419e+01  d0=1.1046e-03  d1=3.1478e-04  neu=6.4426e+00  w_res=9.430e-02  w_d=9.391e+01  w_neu=1.106e-01  res_warmup=1.000  lr=1.42e-04  time=241.2min
+Epoch  7600/10000 | loss=1.9819e+00  res=1.2417e+01  d0=1.0490e-03  d1=2.0505e-04  neu=6.1991e+00  w_res=9.420e-02  w_d=9.488e+01  w_neu=1.121e-01  res_warmup=1.000  lr=1.36e-04  time=242.8min
+Epoch  7650/10000 | loss=1.9860e+00  res=1.2796e+01  d0=1.0470e-03  d1=2.0558e-04  neu=6.0391e+00  w_res=9.411e-02  w_d=9.585e+01  w_neu=1.136e-01  res_warmup=1.000  lr=1.31e-04  time=244.4min
+Epoch  7700/10000 | loss=1.9429e+00  res=1.2632e+01  d0=1.0906e-03  d1=2.2577e-04  neu=5.8575e+00  w_res=9.403e-02  w_d=9.679e+01  w_neu=1.152e-01  res_warmup=1.000  lr=1.26e-04  time=246.0min
+Epoch  7750/10000 | loss=2.0898e+00  res=1.4592e+01  d0=1.0234e-03  d1=3.6433e-04  neu=5.5893e+00  w_res=9.397e-02  w_d=9.774e+01  w_neu=1.167e-01  res_warmup=1.000  lr=1.21e-04  time=247.6min
+Epoch  7800/10000 | loss=1.9419e+00  res=1.3160e+01  d0=1.1272e-03  d1=3.3085e-04  neu=5.5242e+00  w_res=9.390e-02  w_d=9.865e+01  w_neu=1.183e-01  res_warmup=1.000  lr=1.16e-04  time=249.2min
+Epoch  7850/10000 | loss=1.7030e+00  res=1.1345e+01  d0=9.6587e-04  d1=1.9832e-04  neu=5.3004e+00  w_res=9.386e-02  w_d=9.958e+01  w_neu=1.198e-01  res_warmup=1.000  lr=1.11e-04  time=250.8min
+Epoch  7900/10000 | loss=1.7306e+00  res=1.2003e+01  d0=9.5647e-04  d1=2.1246e-04  neu=5.1189e+00  w_res=9.383e-02  w_d=1.005e+02  w_neu=1.213e-01  res_warmup=1.000  lr=1.06e-04  time=252.4min
+Epoch  7950/10000 | loss=1.6235e+00  res=1.1193e+01  d0=9.8507e-04  d1=1.9879e-04  neu=4.9523e+00  w_res=9.378e-02  w_d=1.014e+02  w_neu=1.227e-01  res_warmup=1.000  lr=1.01e-04  time=254.0min
+Epoch  8000/10000 | loss=1.6316e+00  res=1.1711e+01  d0=9.3687e-04  d1=1.8584e-04  neu=4.7732e+00  w_res=9.374e-02  w_d=1.022e+02  w_neu=1.242e-01  res_warmup=1.000  lr=9.64e-05  time=255.6min
+Epoch  8050/10000 | loss=1.6546e+00  res=1.2375e+01  d0=9.0823e-04  d1=2.3403e-04  neu=4.5379e+00  w_res=9.371e-02  w_d=1.031e+02  w_neu=1.256e-01  res_warmup=1.000  lr=9.18e-05  time=257.2min
+Epoch  8100/10000 | loss=1.5024e+00  res=1.1137e+01  d0=8.9912e-04  d1=1.8344e-04  neu=4.3941e+00  w_res=9.368e-02  w_d=1.039e+02  w_neu=1.269e-01  res_warmup=1.000  lr=8.74e-05  time=258.8min
+Epoch  8150/10000 | loss=1.4590e+00  res=1.1040e+01  d0=8.9878e-04  d1=1.9148e-04  neu=4.2089e+00  w_res=9.367e-02  w_d=1.047e+02  w_neu=1.282e-01  res_warmup=1.000  lr=8.30e-05  time=260.4min
+Epoch  8200/10000 | loss=1.3895e+00  res=1.0608e+01  d0=8.6984e-04  d1=1.8453e-04  neu=4.0981e+00  w_res=9.366e-02  w_d=1.055e+02  w_neu=1.295e-01  res_warmup=1.000  lr=7.88e-05  time=262.0min
+Epoch  8250/10000 | loss=1.3558e+00  res=1.0551e+01  d0=9.4775e-04  d1=1.8538e-04  neu=3.8986e+00  w_res=9.366e-02  w_d=1.062e+02  w_neu=1.307e-01  res_warmup=1.000  lr=7.46e-05  time=263.6min
+Epoch  8300/10000 | loss=1.3345e+00  res=1.0660e+01  d0=8.6288e-04  d1=1.8552e-04  neu=3.8061e+00  w_res=9.366e-02  w_d=1.069e+02  w_neu=1.319e-01  res_warmup=1.000  lr=7.06e-05  time=265.2min
+Epoch  8350/10000 | loss=1.2713e+00  res=1.0328e+01  d0=8.4531e-04  d1=1.8838e-04  neu=3.6502e+00  w_res=9.366e-02  w_d=1.076e+02  w_neu=1.330e-01  res_warmup=1.000  lr=6.66e-05  time=266.7min
+Epoch  8400/10000 | loss=1.2374e+00  res=1.0199e+01  d0=9.0403e-04  d1=1.6858e-04  neu=3.5268e+00  w_res=9.368e-02  w_d=1.083e+02  w_neu=1.341e-01  res_warmup=1.000  lr=6.28e-05  time=268.3min
+Epoch  8450/10000 | loss=1.1830e+00  res=1.0004e+01  d0=8.0938e-04  d1=1.7923e-04  neu=3.3936e+00  w_res=9.368e-02  w_d=1.089e+02  w_neu=1.351e-01  res_warmup=1.000  lr=5.91e-05  time=269.9min
+Epoch  8500/10000 | loss=1.1775e+00  res=1.0230e+01  d0=8.0336e-04  d1=1.8988e-04  neu=3.2577e+00  w_res=9.370e-02  w_d=1.095e+02  w_neu=1.360e-01  res_warmup=1.000  lr=5.54e-05  time=271.5min
+Epoch  8550/10000 | loss=1.1047e+00  res=9.6806e+00  d0=8.4952e-04  d1=1.6414e-04  neu=3.1460e+00  w_res=9.372e-02  w_d=1.100e+02  w_neu=1.369e-01  res_warmup=1.000  lr=5.19e-05  time=273.1min
+Epoch  8600/10000 | loss=1.0782e+00  res=9.8043e+00  d0=7.8804e-04  d1=1.8580e-04  neu=2.9578e+00  w_res=9.374e-02  w_d=1.106e+02  w_neu=1.377e-01  res_warmup=1.000  lr=4.85e-05  time=274.7min
+Epoch  8650/10000 | loss=1.0233e+00  res=9.4926e+00  d0=7.6689e-04  d1=1.5136e-04  neu=2.8710e+00  w_res=9.377e-02  w_d=1.111e+02  w_neu=1.385e-01  res_warmup=1.000  lr=4.53e-05  time=276.3min
+Epoch  8700/10000 | loss=9.9975e-01  res=9.4232e+00  d0=7.4743e-04  d1=1.5676e-04  neu=2.8104e+00  w_res=9.379e-02  w_d=1.115e+02  w_neu=1.393e-01  res_warmup=1.000  lr=4.21e-05  time=277.9min
+Epoch  8750/10000 | loss=9.6960e-01  res=9.4135e+00  d0=7.3459e-04  d1=1.5059e-04  neu=2.6638e+00  w_res=9.382e-02  w_d=1.120e+02  w_neu=1.400e-01  res_warmup=1.000  lr=3.90e-05  time=279.5min
+Epoch  8800/10000 | loss=9.3448e-01  res=9.2026e+00  d0=7.5533e-04  d1=1.4602e-04  neu=2.5858e+00  w_res=9.385e-02  w_d=1.124e+02  w_neu=1.406e-01  res_warmup=1.000  lr=3.61e-05  time=281.1min
+Epoch  8850/10000 | loss=9.1700e-01  res=9.1770e+00  d0=7.3489e-04  d1=1.4471e-04  neu=2.5370e+00  w_res=9.388e-02  w_d=1.128e+02  w_neu=1.412e-01  res_warmup=1.000  lr=3.32e-05  time=282.7min
+Epoch  8900/10000 | loss=8.8047e-01  res=9.0504e+00  d0=6.9026e-04  d1=1.4407e-04  neu=2.4369e+00  w_res=9.392e-02  w_d=1.131e+02  w_neu=1.417e-01  res_warmup=1.000  lr=3.05e-05  time=284.3min
+Epoch  8950/10000 | loss=8.5383e-01  res=8.9400e+00  d0=6.8738e-04  d1=1.4189e-04  neu=2.3612e+00  w_res=9.395e-02  w_d=1.135e+02  w_neu=1.422e-01  res_warmup=1.000  lr=2.79e-05  time=285.9min
+Epoch  9000/10000 | loss=8.2550e-01  res=8.8361e+00  d0=6.7030e-04  d1=1.3636e-04  neu=2.2810e+00  w_res=9.398e-02  w_d=1.138e+02  w_neu=1.426e-01  res_warmup=1.000  lr=2.54e-05  time=287.5min
+Epoch  9050/10000 | loss=8.1768e-01  res=8.8969e+00  d0=6.6353e-04  d1=1.3211e-04  neu=2.2243e+00  w_res=9.402e-02  w_d=1.141e+02  w_neu=1.430e-01  res_warmup=1.000  lr=2.31e-05  time=289.1min
+Epoch  9100/10000 | loss=7.8681e-01  res=8.7601e+00  d0=6.4640e-04  d1=1.3900e-04  neu=2.1334e+00  w_res=9.405e-02  w_d=1.143e+02  w_neu=1.434e-01  res_warmup=1.000  lr=2.08e-05  time=290.7min
+Epoch  9150/10000 | loss=7.6901e-01  res=8.6831e+00  d0=6.3894e-04  d1=1.3371e-04  neu=2.0941e+00  w_res=9.408e-02  w_d=1.145e+02  w_neu=1.437e-01  res_warmup=1.000  lr=1.87e-05  time=292.3min
+Epoch  9200/10000 | loss=7.5369e-01  res=8.6414e+00  d0=6.3554e-04  d1=1.2931e-04  neu=2.0427e+00  w_res=9.412e-02  w_d=1.147e+02  w_neu=1.440e-01  res_warmup=1.000  lr=1.67e-05  time=293.9min
+Epoch  9250/10000 | loss=7.3866e-01  res=8.5874e+00  d0=6.2865e-04  d1=1.2770e-04  neu=1.9997e+00  w_res=9.415e-02  w_d=1.149e+02  w_neu=1.443e-01  res_warmup=1.000  lr=1.48e-05  time=295.5min
+Epoch  9300/10000 | loss=7.2266e-01  res=8.5486e+00  d0=6.1736e-04  d1=1.2383e-04  neu=1.9434e+00  w_res=9.418e-02  w_d=1.151e+02  w_neu=1.445e-01  res_warmup=1.000  lr=1.30e-05  time=297.1min
+Epoch  9350/10000 | loss=7.0289e-01  res=8.4294e+00  d0=6.0955e-04  d1=1.2432e-04  neu=1.9052e+00  w_res=9.420e-02  w_d=1.152e+02  w_neu=1.447e-01  res_warmup=1.000  lr=1.14e-05  time=298.7min
+Epoch  9400/10000 | loss=6.8922e-01  res=8.3948e+00  d0=5.9780e-04  d1=1.2661e-04  neu=1.8539e+00  w_res=9.423e-02  w_d=1.153e+02  w_neu=1.449e-01  res_warmup=1.000  lr=9.85e-06  time=300.3min
+Epoch  9450/10000 | loss=6.7260e-01  res=8.3071e+00  d0=5.8879e-04  d1=1.2368e-04  neu=1.8172e+00  w_res=9.425e-02  w_d=1.154e+02  w_neu=1.450e-01  res_warmup=1.000  lr=8.44e-06  time=301.9min
+Epoch  9500/10000 | loss=6.5957e-01  res=8.2627e+00  d0=5.8250e-04  d1=1.1877e-04  neu=1.7749e+00  w_res=9.428e-02  w_d=1.155e+02  w_neu=1.452e-01  res_warmup=1.000  lr=7.15e-06  time=303.5min
+Epoch  9550/10000 | loss=6.5214e-01  res=8.2375e+00  d0=5.7927e-04  d1=1.1823e-04  neu=1.7513e+00  w_res=9.430e-02  w_d=1.156e+02  w_neu=1.453e-01  res_warmup=1.000  lr=5.98e-06  time=305.1min
+Epoch  9600/10000 | loss=6.3955e-01  res=8.1759e+00  d0=5.6638e-04  d1=1.1531e-04  neu=1.7241e+00  w_res=9.431e-02  w_d=1.157e+02  w_neu=1.453e-01  res_warmup=1.000  lr=4.94e-06  time=306.7min
+Epoch  9650/10000 | loss=6.3743e-01  res=8.1791e+00  d0=5.6940e-04  d1=1.1759e-04  neu=1.7089e+00  w_res=9.433e-02  w_d=1.157e+02  w_neu=1.454e-01  res_warmup=1.000  lr=4.02e-06  time=308.3min
+Epoch  9700/10000 | loss=6.3295e-01  res=8.1581e+00  d0=5.6320e-04  d1=1.1559e-04  neu=1.7028e+00  w_res=9.434e-02  w_d=1.158e+02  w_neu=1.455e-01  res_warmup=1.000  lr=3.22e-06  time=309.9min
+Epoch  9750/10000 | loss=6.1911e-01  res=8.0870e+00  d0=5.5944e-04  d1=1.1288e-04  neu=1.6626e+00  w_res=9.435e-02  w_d=1.158e+02  w_neu=1.455e-01  res_warmup=1.000  lr=2.54e-06  time=311.5min
+Epoch  9800/10000 | loss=6.2187e-01  res=8.0986e+00  d0=5.5918e-04  d1=1.1359e-04  neu=1.6765e+00  w_res=9.436e-02  w_d=1.158e+02  w_neu=1.456e-01  res_warmup=1.000  lr=1.99e-06  time=313.1min
+Epoch  9850/10000 | loss=6.1600e-01  res=8.0849e+00  d0=5.4996e-04  d1=1.1467e-04  neu=1.6538e+00  w_res=9.437e-02  w_d=1.158e+02  w_neu=1.456e-01  res_warmup=1.000  lr=1.55e-06  time=314.7min
+Epoch  9900/10000 | loss=6.0798e-01  res=8.0300e+00  d0=5.4558e-04  d1=1.1152e-04  neu=1.6421e+00  w_res=9.437e-02  w_d=1.159e+02  w_neu=1.456e-01  res_warmup=1.000  lr=1.25e-06  time=316.3min
+Epoch  9950/10000 | loss=6.0780e-01  res=8.0396e+00  d0=5.4640e-04  d1=1.1153e-04  neu=1.6354e+00  w_res=9.438e-02  w_d=1.159e+02  w_neu=1.456e-01  res_warmup=1.000  lr=1.06e-06  time=317.9min
+Epoch 10000/10000 | loss=5.9793e-01  res=7.9711e+00  d0=5.4132e-04  d1=1.1026e-04  neu=1.6183e+00  w_res=9.438e-02  w_d=1.159e+02  w_neu=1.456e-01  res_warmup=1.000  lr=1.00e-06  time=319.5min
+
+Best physics loss: 5.9793e-01
+
+Final Bayesian loss weights
+  w_res=9.438311e-02
+  w_d=1.158873e+02
+  w_neu=1.456397e-01
+
+============================================================
+ Evaluation vs COMSOL (at raw 4300 mesh points)
+============================================================
+
+Loaded best checkpoint.
+
+    v0      x0      y0    rel-L2 (%)
+------------------------------------
+   0.0    0.10    0.30        4.0367
+   0.5    0.11    0.31        3.4329
+   1.0    0.12    0.32        2.9999
+   1.5    0.13    0.33        2.6972
+   2.0    0.14    0.34        2.4606
+   2.5    0.15    0.35        2.2495
+   3.0    0.16    0.36        2.0602
+   3.5    0.17    0.37        1.9011
+   4.0    0.18    0.38        1.7697
+   4.5    0.19    0.39        1.6554
+   5.0    0.20    0.40        1.5498
+   5.5    0.21    0.41        1.4475
+   6.0    0.22    0.42        1.3416
+   6.5    0.23    0.43        1.2241
+   7.0    0.24    0.44        1.0890
+   7.5    0.25    0.45        0.9355
+   8.0    0.26    0.46        0.7687
+   8.5    0.27    0.47        0.5990
+   9.0    0.28    0.48        0.4430
+   9.5    0.29    0.49        0.3279
+  10.0    0.30    0.50        0.2912
+  10.5    0.31    0.51        0.3361
+  11.0    0.32    0.52        0.4193
+  11.5    0.33    0.53        0.5096
+  12.0    0.34    0.54        0.5959
+  12.5    0.35    0.55        0.6752
+  13.0    0.36    0.56        0.7472
+  13.5    0.37    0.57        0.8130
+  14.0    0.38    0.58        0.8742
+  14.5    0.39    0.59        0.9320
+  15.0    0.40    0.60        0.9876
+  15.5    0.41    0.61        1.0436
+  16.0    0.42    0.62        1.1038
+  16.5    0.43    0.63        1.1735
+  17.0    0.44    0.64        1.2572
+  17.5    0.45    0.65        1.3575
+  18.0    0.46    0.66        1.4755
+  18.5    0.47    0.67        1.6113
+  19.0    0.48    0.68        1.7651
+  19.5    0.49    0.69        1.9376
+  20.0    0.50    0.70        2.1308
+
+Mean rel-L2: 1.3909%  Max: 4.0367%
+/home/amrit/btp/pideeponet_2d_dirichlet_v0_cuda1_bayesian.py:519: RuntimeWarning: invalid value encountered in log10
+  ax.plot(np.log10(np.array(v) + 1e-15), label=k)
+  Saved -> /home/amrit/btp/output_multi_forcing_run1/training_history.png
+  Saved -> /home/amrit/btp/output_multi_forcing_run1/error_vs_v0.png
+  Saved -> /home/amrit/btp/output_multi_forcing_run1/comparison_v0_0.0.png
+  Saved -> /home/amrit/btp/output_multi_forcing_run1/comparison_v0_5.0.png
+  Saved -> /home/amrit/btp/output_multi_forcing_run1/comparison_v0_10.0.png
+  Saved -> /home/amrit/btp/output_multi_forcing_run1/comparison_v0_15.0.png
+  Saved -> /home/amrit/btp/output_multi_forcing_run1/comparison_v0_20.0.png
+
+All outputs saved to /home/amrit/btp/output_multi_forcing_run1/
+Done.

@@ -1,8 +1,8 @@
 """
 pideeponet_2d_dirichlet_v0_cuda1_bayesian.py
 =============================================
-Physics-Informed DeepONet for 2D Poisson with variable Dirichlet BC at x=0
-and **multiple forcing functions** (varying Gaussian centre per sample).
+Physics-Informed DeepONet for 2D Poisson with variable Dirichlet BC at x=0,
+**multiple forcing functions**, and **residual-based active learning (RAD)**.
 
 PDE:   -nabla^2 u = f_i(x,y)   on [0,1]^2
 BCs:   u = v0_i  on x=0        (Dirichlet, variable)
@@ -11,6 +11,18 @@ BCs:   u = v0_i  on x=0        (Dirichlet, variable)
 
 Each sample i has its own Gaussian forcing f_i centred at (x0_i, y0_i)
 and Dirichlet value v0_i.
+
+Active Learning (RAD)
+---------------------
+Instead of evaluating the PDE residual on all ~28k interior points every
+step, we sample n_collocation points from an adaptive distribution:
+
+    p(x_j) ∝ |r(x_j)|^k + c
+
+where r is the PDE residual averaged across training samples. The weights
+are recomputed every resample_every epochs on the full interior mesh.
+(Wu et al., "A comprehensive study of non-adaptive and residual-based
+adaptive sampling for PINNs", CMAME 2023.)
 
 Data
 ----
@@ -224,7 +236,9 @@ class PIDeepONetTrainer:
                  device=None, output_scale=1.0,
                  loss_balancer=None,
                  warmup_epochs=500, v0_zero_weight=1.0,
-                 train_indices=None, num_batches=1):
+                 train_indices=None, num_batches=1,
+                 n_collocation=0, resample_every=500,
+                 rad_k=1.0, rad_c=1.0):
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         self.model  = model.to(self.device)
         self.optimizer = optimizer
@@ -254,13 +268,68 @@ class PIDeepONetTrainer:
         self.neu_coords      = _t(xy[neu_idx])
         self.interior_coords = _t(xy[interior_idx])
 
-        # Per-sample forcing at interior points: (n_samples, n_interior)
-        self.f_interior = _t(f_all[interior_idx, :].T)
+        # Only store TRAIN data — no test data in the trainer
+        train_f = f_all[interior_idx, :][:, self.train_indices]       # (n_interior, n_train)
+        self.f_interior = _t(train_f.T)                               # (n_train, n_interior)
 
-        # Branch inputs: (v0, x0, y0) per sample → (n_samples, 3)
         branch_data = np.column_stack([v0_values, x0_values, y0_values]).astype(np.float32)
-        self.branch_inputs = _t(branch_data)
-        self.train_branch_inputs = self.branch_inputs[self.train_indices]
+        self.train_branch_inputs = _t(branch_data[self.train_indices]) # (n_train, 3)
+
+        # RAD active learning
+        n_int = self.interior_coords.shape[0]
+        self.use_rad = n_collocation > 0 and n_collocation < n_int
+        self.n_collocation   = n_collocation if self.use_rad else n_int
+        self.resample_every  = int(resample_every)
+        self.rad_k           = float(rad_k)
+        self.rad_c           = float(rad_c)
+        self.rad_weights = torch.ones(n_int, device=self.device) / n_int
+        if self.use_rad:
+            print(f"RAD active learning: {self.n_collocation}/{n_int} collocation pts, "
+                  f"resample every {self.resample_every} epochs, k={self.rad_k}, c={self.rad_c}")
+
+    # ------------------------------------------------------------------
+    @torch.no_grad()
+    def _recompute_rad_weights(self):
+        """
+        Recompute RAD sampling weights over all interior points.
+
+        For each training sample we evaluate |-(u_xx + u_yy) - f|^k on
+        the full interior mesh, then average across samples.  The final
+        probability vector is p_j = (mean_resid_j^k + c) / Z.
+
+        Autograd is needed for the Laplacian but we process one sample at
+        a time and never build a training graph, so memory stays low.
+        """
+        self.model.eval()
+        n_int = self.interior_coords.shape[0]
+        accum = torch.zeros(n_int, device=self.device)
+
+        for pos in range(len(self.train_indices)):
+            xy_leaf = self.interior_coords.clone().requires_grad_(True)   # (n_int, 2)
+            b_in = self.train_branch_inputs[pos : pos + 1]               # (1, 3)
+
+            with torch.enable_grad():
+                if self.model.fourier_enc is not None:
+                    xy_enc = self.model.fourier_enc(xy_leaf)
+                else:
+                    xy_enc = xy_leaf
+                t_out = self.model.trunk(xy_enc)                          # (n_int, p)
+                b_out = self.model.branch(b_in)                           # (1, p)
+                u = (b_out * t_out).sum(dim=-1) + self.model.bias         # (n_int,)
+                u = self.S * u
+
+                g1 = torch.autograd.grad(u.sum(), xy_leaf, create_graph=True)[0]
+                u_xx = torch.autograd.grad(g1[:, 0].sum(), xy_leaf, retain_graph=True)[0][:, 0]
+                u_yy = torch.autograd.grad(g1[:, 1].sum(), xy_leaf)[0][:, 1]
+
+            f_i = self.f_interior[pos]                                    # (n_int,)
+            res = -(u_xx + u_yy) - f_i
+            accum += res.abs().pow(self.rad_k)
+
+        accum /= len(self.train_indices)
+        self.rad_weights = accum + self.rad_c
+        self.rad_weights /= self.rad_weights.sum()
+        self.model.train()
 
     # ------------------------------------------------------------------
     def _w_res_now(self, epoch):
@@ -335,15 +404,17 @@ class PIDeepONetTrainer:
         L_neu = (w_t * L_neu_per).sum()
 
         # ---- PDE residual : -(u_xx + u_yy) - f_i = 0  (per-sample f) ----
-        n_int = self.interior_coords.shape[0]
-        xy_int_b = self.interior_coords.unsqueeze(0).expand(B, n_int, 2).contiguous()
+        col_idx = self._current_col_idx                              # (n_col,) set in train_step
+        xy_col = self.interior_coords[col_idx]                       # (n_col, 2)
+        n_col = xy_col.shape[0]
+        xy_int_b = xy_col.unsqueeze(0).expand(B, n_col, 2).contiguous()
         xy_int_b.requires_grad_(True)
-        u_int = self.S * self._forward_per_sample_xy(b_input, xy_int_b)  # (B, n_int)
-        g1 = torch.autograd.grad(u_int.sum(), xy_int_b, create_graph=True)[0]   # (B, n_int, 2)
+        u_int = self.S * self._forward_per_sample_xy(b_input, xy_int_b)  # (B, n_col)
+        g1 = torch.autograd.grad(u_int.sum(), xy_int_b, create_graph=True)[0]   # (B, n_col, 2)
         u_xx = torch.autograd.grad(g1[..., 0].sum(), xy_int_b, create_graph=True)[0][..., 0]
         u_yy = torch.autograd.grad(g1[..., 1].sum(), xy_int_b, create_graph=True)[0][..., 1]
-        f_batch = self.f_interior[orig_idx]                          # (B, n_int)
-        res = -(u_xx + u_yy) - f_batch                              # (B, n_int)
+        f_batch = self.f_interior[batch_positions][:, col_idx]        # (B, n_col)
+        res = -(u_xx + u_yy) - f_batch                              # (B, n_col)
         L_res_per = torch.mean(res ** 2, dim=1)                     # (B,)
         L_res = (w_t * L_res_per).sum()
 
@@ -364,9 +435,24 @@ class PIDeepONetTrainer:
         One epoch = full shuffle of train_indices, split into mini-batches of
         size ceil(n_v0 / num_batches), one optimizer step per mini-batch.
 
-        This mirrors the TensorFlow pipeline:
-            dataset.shuffle(buffer_size=N).batch(ceil(N / num_batches))
+        RAD active learning: every resample_every epochs (and at epoch 1),
+        recompute the sampling weights on the full interior mesh.  Each
+        epoch, draw n_collocation indices from the current distribution.
         """
+        # RAD: recompute weights periodically
+        rad_resampled = False
+        if self.use_rad and (epoch == 1 or epoch % self.resample_every == 0):
+            self._recompute_rad_weights()
+            rad_resampled = True
+
+        # Draw collocation indices for this epoch
+        if self.use_rad:
+            self._current_col_idx = torch.multinomial(
+                self.rad_weights, self.n_collocation, replacement=False)
+        else:
+            self._current_col_idx = torch.arange(
+                self.interior_coords.shape[0], device=self.device)
+
         self.model.train()
         w_res = self._w_res_now(epoch)
 
@@ -389,6 +475,7 @@ class PIDeepONetTrainer:
             "neu_loss": agg_neu / n_steps,
             "res_warmup": w_res,
             "n_minibatches": n_steps,
+            "rad_resampled": rad_resampled,
         }
         stats.update(last_bayes_stats)
         return stats
@@ -434,6 +521,7 @@ class PIDeepONetTrainer:
 
             if not show_progress and (ep % verbose_freq == 0 or ep == 1):
                 ela = (time.time() - t0) / 60.0
+                rad_tag = "  [RAD resampled]" if stats.get("rad_resampled") else ""
                 print(f"Epoch {ep:5d}/{epochs} | "
                       f"loss={stats['loss']:.4e}  "
                       f"res={stats['res_loss']:.4e}  "
@@ -444,7 +532,8 @@ class PIDeepONetTrainer:
                       f"w_d={stats['w_d']:.3e}  "
                       f"w_neu={stats['w_neu']:.3e}  "
                       f"res_warmup={stats['res_warmup']:.3f}  "
-                      f"lr={lr:.2e}  time={ela:.1f}min")
+                      f"lr={lr:.2e}  time={ela:.1f}min"
+                      f"{rad_tag}")
 
         torch.save(self.model.state_dict(), os.path.join(log_dir, "model_final.pth"))
         torch.save(self.loss_balancer.state_dict(), os.path.join(log_dir, "loss_balancer_final.pth"))
@@ -457,11 +546,24 @@ class PIDeepONetTrainer:
         return history
 
     # ------------------------------------------------------------------
-    def predict(self, idx):
-        """Return predicted u at all 4300 raw mesh points. Shape: (4300,)."""
+    def predict(self, branch_input):
+        """
+        Predict u at all mesh points for a single sample.
+
+        Parameters
+        ----------
+        branch_input : array-like, shape (3,)
+            (v0, x0, y0) for the sample to predict.
+
+        Returns
+        -------
+        u : ndarray, shape (N,)
+        """
         self.model.eval()
+        b = torch.as_tensor(branch_input, dtype=torch.float32,
+                            device=self.device).unsqueeze(0)          # (1, 3)
         with torch.no_grad():
-            u = self.S * self.model(self.branch_inputs[idx:idx+1], self.xy_all)
+            u = self.S * self.model(b, self.xy_all)
         return u.squeeze(0).cpu().numpy()
 
 
@@ -508,6 +610,31 @@ def plot_error_summary(v0_values, rel_errors, save_dir):
     ax.set_title("PI-DeepONet rel-L2 vs COMSOL per v0")
     ax.legend(); plt.tight_layout()
     path = os.path.join(save_dir, "error_vs_v0.png")
+    plt.savefig(path, dpi=150, bbox_inches="tight")
+    print(f"  Saved -> {path}")
+    plt.close(fig)
+
+
+def plot_error_summary_train_test(v0_values, rel_errors,
+                                  train_indices, test_indices, save_dir):
+    """Bar chart with train (blue) and test (orange) errors side by side."""
+    fig, ax = plt.subplots(figsize=(14, 4.5))
+    w = 0.35
+    train_v0 = v0_values[train_indices]
+    test_v0  = v0_values[test_indices]
+    train_err = rel_errors[train_indices] * 100
+    test_err  = rel_errors[test_indices] * 100
+
+    ax.bar(train_v0 - w/2, train_err, w, color="steelblue", alpha=0.85,
+           label=f"Train ({len(train_indices)}) — mean {train_err.mean():.4f}%")
+    ax.bar(test_v0 + w/2, test_err, w, color="darkorange", alpha=0.85,
+           label=f"Test ({len(test_indices)}) — mean {test_err.mean():.4f}%")
+    ax.axhline(1.0, color="red", ls="--", lw=1, label="1% threshold")
+    ax.set_xlabel("v0 (Dirichlet BC at x=0)")
+    ax.set_ylabel("Rel-L2 error (%)")
+    ax.set_title("PI-DeepONet rel-L2 vs COMSOL — Train / Test split")
+    ax.legend(); plt.tight_layout()
+    path = os.path.join(save_dir, "error_vs_v0_train_test.png")
     plt.savefig(path, dpi=150, bbox_inches="tight")
     print(f"  Saved -> {path}")
     plt.close(fig)
@@ -568,10 +695,24 @@ def main():
                         help="Disable the live tqdm epoch progress bar.")
     parser.add_argument("--train_v0",        type=float, default=None,
                         help="Train on only the nearest available v0 value, e.g. --train_v0 0.")
+    parser.add_argument("--train_step",      type=float, default=None,
+                        help="Train on v0 values at this step size (e.g. 1.0 picks v0=0,1,2,...,20). "
+                             "Remaining samples become the test set.")
     parser.add_argument("--num_batches",     type=int, default=8,
                         help="Number of mini-batches per epoch. "
                              "Mini-batch size is ceil(n_v0 / num_batches). "
                              "Default 8 to fit 28k mesh pts on GPU.")
+
+    # RAD active learning
+    parser.add_argument("--n_collocation",  type=int, default=0,
+                        help="Number of collocation points sampled per epoch via RAD. "
+                             "0 = use all interior points (no active learning).")
+    parser.add_argument("--resample_every", type=int, default=500,
+                        help="Recompute RAD sampling weights every N epochs.")
+    parser.add_argument("--rad_k",          type=float, default=1.0,
+                        help="Exponent k in the RAD weight formula |r|^k.")
+    parser.add_argument("--rad_c",          type=float, default=1.0,
+                        help="Floor constant c in the RAD weight formula (prevents zero prob).")
 
     args = parser.parse_args()
     np.random.seed(args.seed)
@@ -586,7 +727,21 @@ def main():
     xy, f_all, v0_values, x0_values, y0_values, u_comsol = load_data(
         args.forcing_file, args.data_file)
     train_indices = None
-    if args.train_v0 is not None:
+    test_indices = None
+    if args.train_step is not None:
+        step = float(args.train_step)
+        train_v0_targets = np.arange(v0_values.min(), v0_values.max() + step / 2, step)
+        train_indices = []
+        for tv in train_v0_targets:
+            idx = int(np.argmin(np.abs(v0_values - tv)))
+            if idx not in train_indices:
+                train_indices.append(idx)
+        test_indices = sorted(set(range(len(v0_values))) - set(train_indices))
+        print(f"Train/test split (step={step}): "
+              f"{len(train_indices)} train, {len(test_indices)} test")
+        print(f"  Train v0: {v0_values[train_indices]}")
+        print(f"  Test  v0: {v0_values[test_indices]}")
+    elif args.train_v0 is not None:
         nearest_idx = int(np.argmin(np.abs(v0_values - args.train_v0)))
         train_indices = [nearest_idx]
         print(f"Training subset: requested v0={args.train_v0:g}; "
@@ -639,16 +794,27 @@ def main():
         v0_zero_weight=args.v0_zero_weight,
         train_indices=train_indices,
         num_batches=args.num_batches,
+        n_collocation=args.n_collocation,
+        resample_every=args.resample_every,
+        rad_k=args.rad_k,
+        rad_c=args.rad_c,
     )
 
     print(f"\n{'='*60}")
     n_train_samples = len(v0_values) if train_indices is None else len(train_indices)
-    print(f" Training  |  {n_train_samples} samples  |  {args.epochs} epochs")
+    n_test_samples = 0 if test_indices is None else len(test_indices)
+    split_info = f"  ({n_test_samples} held-out test)" if n_test_samples else ""
+    print(f" Training  |  {n_train_samples} samples{split_info}  |  {args.epochs} epochs")
     print(f" num_batches={trainer.num_batches}  minibatch_size={trainer.minibatch_size}  "
           f"steps_per_epoch={int(np.ceil(trainer.n_v0 / trainer.minibatch_size))}")
     print(f" Bayesian init weights: res={args.bayes_init_res}  "
           f"d={args.bayes_init_d}  neu={args.bayes_init_neu}  S={args.output_scale}")
     print(f" warmup={args.warmup_epochs}  lr={args.lr}  v0_zero_weight={args.v0_zero_weight}")
+    if trainer.use_rad:
+        print(f" RAD active learning: n_collocation={trainer.n_collocation}  "
+              f"resample_every={trainer.resample_every}  k={trainer.rad_k}  c={trainer.rad_c}")
+    else:
+        print(f" RAD: disabled (using all {trainer.n_collocation} interior points)")
     print(f"{'='*60}\n")
 
     history = trainer.run(epochs=args.epochs, verbose_freq=50, log_dir=args.log_dir,
@@ -660,44 +826,80 @@ def main():
     print(f"  w_neu={final_weights['w_neu']:.6e}")
 
     # ---- Evaluate vs COMSOL ----
-    print(f"\n{'='*60}")
-    print(f" Evaluation vs COMSOL (at raw 4300 mesh points)")
-    print(f"{'='*60}\n")
-
     best_ckpt = os.path.join(args.log_dir, "model_best.pth")
     if os.path.exists(best_ckpt):
         model.load_state_dict(torch.load(best_ckpt, map_location=device, weights_only=True))
-        print("Loaded best checkpoint.")
+        print("\nLoaded best checkpoint.")
 
-    eval_indices = train_indices if train_indices is not None else list(range(len(v0_values)))
-    eval_v0_values = v0_values[eval_indices]
-    eval_x0_values = x0_values[eval_indices]
-    eval_y0_values = y0_values[eval_indices]
-    rel_errors = np.zeros(len(eval_indices))
-    for j, i in enumerate(eval_indices):
-        u_pred = trainer.predict(i)
+    # Build branch inputs for ALL samples (outside the trainer — eval only)
+    all_branch = np.column_stack([v0_values, x0_values, y0_values]).astype(np.float32)
+
+    def _eval_set(indices, set_name):
+        """Evaluate a set of samples and print results."""
+        idx_list = list(indices)
+        v0s = v0_values[idx_list]
+        x0s = x0_values[idx_list]
+        y0s = y0_values[idx_list]
+        errs = np.zeros(len(idx_list))
+        for j, i in enumerate(idx_list):
+            u_pred = trainer.predict(all_branch[i])
+            u_ref  = u_comsol[:, i]
+            errs[j] = np.sqrt(
+                np.sum((u_pred - u_ref)**2) / (np.sum(u_ref**2) + 1e-12))
+
+        print(f"\n{'='*60}")
+        print(f" {set_name} evaluation vs COMSOL  ({len(idx_list)} samples)")
+        print(f"{'='*60}")
+        print(f"\n{'v0':>6}  {'x0':>6}  {'y0':>6}  {'rel-L2 (%)':>12}")
+        print("-" * 36)
+        for v0, x0, y0, err in zip(v0s, x0s, y0s, errs):
+            print(f"{v0:6.1f}  {x0:6.2f}  {y0:6.2f}  {err*100:12.4f}")
+        print(f"\n{set_name} — Mean rel-L2: {errs.mean()*100:.4f}%  "
+              f"Max: {errs.max()*100:.4f}%")
+        return v0s, errs
+
+    # Evaluate all samples, then split for reporting
+    all_indices = list(range(len(v0_values)))
+    all_rel_errors = np.zeros(len(v0_values))
+    for i in all_indices:
+        u_pred = trainer.predict(all_branch[i])
         u_ref  = u_comsol[:, i]
-        rel_errors[j] = np.sqrt(
+        all_rel_errors[i] = np.sqrt(
             np.sum((u_pred - u_ref)**2) / (np.sum(u_ref**2) + 1e-12))
 
-    print(f"\n{'v0':>6}  {'x0':>6}  {'y0':>6}  {'rel-L2 (%)':>12}")
-    print("-" * 36)
-    for v0, x0, y0, err in zip(eval_v0_values, eval_x0_values,
-                                eval_y0_values, rel_errors):
-        print(f"{v0:6.1f}  {x0:6.2f}  {y0:6.2f}  {err*100:12.4f}")
-    print(f"\nMean rel-L2: {rel_errors.mean()*100:.4f}%  "
-          f"Max: {rel_errors.max()*100:.4f}%")
+    if test_indices is not None:
+        train_v0s, train_errs = _eval_set(train_indices, "TRAIN")
+        test_v0s, test_errs = _eval_set(test_indices, "TEST")
+    else:
+        eval_indices = train_indices if train_indices is not None else all_indices
+        _eval_set(eval_indices, "ALL")
 
     # ---- Plots ----
     plot_history(history, save_dir=args.log_dir)
-    plot_error_summary(eval_v0_values, rel_errors, save_dir=args.log_dir)
-    v0_plots = eval_v0_values if train_indices is not None else [0.0, 5.0, 10.0, 15.0, 20.0]
-    for v0_plot in v0_plots:
+
+    if test_indices is not None:
+        plot_error_summary_train_test(
+            v0_values, all_rel_errors,
+            train_indices, test_indices,
+            save_dir=args.log_dir)
+    else:
+        eval_idx = train_indices if train_indices is not None else all_indices
+        plot_error_summary(v0_values[eval_idx], all_rel_errors[eval_idx],
+                           save_dir=args.log_dir)
+
+    v0_plots = [0.0, 5.0, 10.0, 15.0, 20.0]
+    if test_indices is not None:
+        test_v0_set = set(v0_values[test_indices])
+        v0_plots += [0.5, 5.5, 10.5, 15.5]
+    for v0_plot in sorted(set(v0_plots)):
         idx = int(np.argmin(np.abs(v0_values - v0_plot)))
-        plot_three_panel(xy, u_comsol[:, idx], trainer.predict(idx),
+        tag = ""
+        if test_indices is not None:
+            tag = " [TEST]" if idx in test_indices else " [TRAIN]"
+        plot_three_panel(xy, u_comsol[:, idx], trainer.predict(all_branch[idx]),
                          save_dir=args.log_dir,
                          fname=f"comparison_v0_{v0_values[idx]:.1f}.png",
-                         label=f"v0={v0_values[idx]:.1f}")
+                         label=f"v0={v0_values[idx]:.1f}{tag}")
 
     print(f"\nAll outputs saved to {os.path.abspath(args.log_dir)}/")
     print("Done.")
